@@ -37,6 +37,7 @@ def open_file_dialog():
             # if we have a comment in any given row, we know an experimental event may have happened here
             if df.loc[i, "Comment"]:
                 events.append(i)
+        label_file_name.config(text = filepath)
         button_get_event["state"] = "normal"
         button_file_dialog["state"] = "disabled"
     except FileNotFoundError:
@@ -55,6 +56,7 @@ def text_display_readonly(string):
     text_display.configure(state="disabled")
 
 window = tk.Tk()
+window.resizable(0, 0)
 window.title("biosensing-stats")
 window.geometry("710x460")
 button_file_dialog = tk.Button(window, height = 1, width = 10, text = "Browse Files", command = open_file_dialog)
@@ -64,4 +66,6 @@ button_get_event.place(x = 100, y = 10)
 button_get_event["state"] = "disabled"
 text_display = scrolledtext.ScrolledText(window, height = 25, width = 85)
 text_display.place(x = 10, y = 45)
+label_file_name = tk.Label(window)
+label_file_name.place(x = 190, y = 13)
 window.mainloop()
