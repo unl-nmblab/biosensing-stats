@@ -45,7 +45,12 @@ def open_file_dialog():
 def get_event():
     global df
     global events
-    text_display.insert(tk.INSERT, df.loc[events.pop(0)])
+    text_display_readonly(df.loc[events.pop(0)])
+
+def text_display_readonly(string):
+    text_display.configure(state="normal")
+    text_display.insert(tk.END, string)
+    text_display.configure(state="disabled")
 
 window = tk.Tk()
 window.title("biosensing-stats")
