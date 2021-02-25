@@ -15,11 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
+import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
 
+df = None
+
+# prompts the user to select a text file and inputs data as a pandas dataframe
 def open_file_dialog():
     filepath = tk.filedialog.askopenfilename(initialdir = "./", title = "Select a File", filetypes = (("Text files", "*.txt*"), ("All files", "*.*")))
+    df = pd.read_table(filepath, names = ["Date","Time","Time Stamp","Time from Start","BIO 1","Comment"], skiprows = 7)
+    # strip whitespace from columns
+    df["Date"] = df["Date"].str.strip()
+    df["Time"] = df["Time"].str.strip()
+    df["Comment"] = df["Comment"].str.strip()
 
 window = tk.Tk()
 window.title("biosensing-stats")
