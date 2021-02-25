@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import pandas as pd
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, scrolledtext
 
 df = None
 events = []
@@ -38,20 +38,23 @@ def open_file_dialog():
             if df.loc[i, "Comment"]:
                 events.append(i)
         button_get_event["state"] = "normal"
+        button_file_dialog["state"] = "disabled"
     except FileNotFoundError:
         pass
 
 def get_event():
     global df
     global events
-    print(df.loc[events.pop(0)])
+    text_display.insert(tk.INSERT, df.loc[events.pop(0)])
 
 window = tk.Tk()
 window.title("biosensing-stats")
-window.geometry("700x450")
+window.geometry("710x460")
 button_file_dialog = tk.Button(window, height = 1, width = 10, text = "Browse Files", command = open_file_dialog)
 button_file_dialog.place(x = 10, y = 10)
 button_get_event = tk.Button(window, height = 1, width = 10, text = "Get Event", command = get_event)
 button_get_event.place(x = 100, y = 10)
 button_get_event["state"] = "disabled"
+text_display = scrolledtext.ScrolledText(window, height = 25, width = 85)
+text_display.place(x = 10, y = 45)
 window.mainloop()
