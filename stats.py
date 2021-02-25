@@ -24,6 +24,8 @@ events = []
 
 # prompts the user to select a text file and inputs data as a pandas dataframe
 def open_file_dialog():
+    global df
+    global events
     filepath = tk.filedialog.askopenfilename(initialdir = "./", title = "Select a File", filetypes = (("Text files", "*.txt*"), ("All files", "*.*")))
     try:
         df = pd.read_table(filepath, names = ["Date","Time","Time Stamp","Time from Start","BIO 1","Comment"], skiprows = 7)
@@ -39,12 +41,17 @@ def open_file_dialog():
     except FileNotFoundError:
         pass
 
+def get_event():
+    global df
+    global events
+    print(df.loc[events.pop(0)])
+
 window = tk.Tk()
 window.title("biosensing-stats")
 window.geometry("700x450")
 button_file_dialog = tk.Button(window, height = 1, width = 10, text = "Browse Files", command = open_file_dialog)
 button_file_dialog.place(x = 10, y = 10)
-button_get_event = tk.Button(window, height = 1, width = 10, text = "Get Event")
+button_get_event = tk.Button(window, height = 1, width = 10, text = "Get Event", command = get_event)
 button_get_event.place(x = 100, y = 10)
 button_get_event["state"] = "disabled"
 window.mainloop()
