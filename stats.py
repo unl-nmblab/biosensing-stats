@@ -20,6 +20,7 @@ import tkinter as tk
 from tkinter import filedialog
 
 df = None
+events = []
 
 # prompts the user to select a text file and inputs data as a pandas dataframe
 def open_file_dialog():
@@ -30,6 +31,10 @@ def open_file_dialog():
         df["Date"] = df["Date"].str.strip()
         df["Time"] = df["Time"].str.strip()
         df["Comment"] = df["Comment"].str.strip()
+        for i in range(0, df.shape[0]):
+            # if we have a comment in any given row, we know an experimental event may have happened here
+            if df.loc[i, "Comment"]:
+                events.append(i)
     except FileNotFoundError:
         pass
 
