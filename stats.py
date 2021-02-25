@@ -35,6 +35,7 @@ def open_file_dialog():
             # if we have a comment in any given row, we know an experimental event may have happened here
             if df.loc[i, "Comment"]:
                 events.append(i)
+        button_get_event["state"] = "normal"
     except FileNotFoundError:
         pass
 
