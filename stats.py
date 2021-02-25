@@ -46,6 +46,8 @@ def get_event():
     global df
     global events
     text_display_readonly(df.loc[events.pop(0)])
+    if not events:
+        button_get_event["state"] = "disabled"
 
 def text_display_readonly(string):
     text_display.configure(state="normal")
