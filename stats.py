@@ -22,7 +22,9 @@ from tkinter import filedialog, messagebox, scrolledtext
 df = None
 events = []
 
-# prompts the user to select a text file and inputs data as a pandas dataframe
+# prompts the user to select a text file and inputs data as a pandas dataframe,
+#  then finds potential experimental events and places their line numbers into
+#  the event list
 def open_file_dialog():
     global df
     global events
@@ -43,6 +45,8 @@ def open_file_dialog():
     except FileNotFoundError:
         pass
 
+# collects a remaining event and prompts the user if it is an experimental
+#  event or just a comment
 def get_event():
     global df
     global events
@@ -50,21 +54,27 @@ def get_event():
     text_display_clear()
     text_display_readonly(df.loc[curr_event])
     # ask the user to decide if we analyze this particular event
-    message_box = tk.messagebox.askquestion("User Input Required", "Perform analysis on this event?", icon = "question")
+    message_box = tk.messagebox.askquestion("User Input Required", "Does this comment represent an experimental event?", icon = "question")
     if message_box == "yes":
         # run both types of analysis
     if not events:
         button_get_event["state"] = "disabled"
 
+# displays the given string but disallows the user from typing in the text box
 def text_display_readonly(string):
     text_display.configure(state = "normal")
     text_display.insert(tk.END, string)
     text_display.configure(state = "disabled")
 
+# like text_display_readonly but clears the display instead
 def text_display_clear():
     text_display.configure(state = "normal")
     text_display.delete(1.0, tk.END)
     text_display.configure(state = "disabled")
+
+# returns a simple string representation of the given event (a row in df)
+def event_str(event):
+    return "Time from Start\t\t\t" + str(event["Time from Start"]) + "\nComment\t\t\t" + str(event["Comment"])
 
 window = tk.Tk()
 window.resizable(0, 0)
