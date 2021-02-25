@@ -15,9 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
+import numpy as np
 import pandas as pd
 import tkinter as tk
-from tkinter import filedialog, messagebox, scrolledtext
+from tkinter import filedialog, messagebox, scrolledtext, simpledialog
 
 df = None
 events = []
@@ -52,11 +53,12 @@ def get_event():
     global events
     curr_event = events.pop(0)
     text_display_clear()
-    text_display_readonly(df.loc[curr_event])
+    text_display_readonly(event_str(df.loc[curr_event]))
     # ask the user to decide if we analyze this particular event
     message_box = tk.messagebox.askquestion("User Input Required", "Does this comment represent an experimental event?", icon = "question")
     if message_box == "yes":
         # run both types of analysis
+        two_second_analysis(df, curr_event)
     if not events:
         button_get_event["state"] = "disabled"
 
@@ -75,6 +77,29 @@ def text_display_clear():
 # returns a simple string representation of the given event (a row in df)
 def event_str(event):
     return "Time from Start\t\t\t" + str(event["Time from Start"]) + "\nComment\t\t\t" + str(event["Comment"])
+
+# performs a 2-second analysis on the provided dataframe at the event, given as a row number
+def two_second_analysis(df, event_line_num):
+    # select 30 seconds pre-event data and a range of post-event data (from 180 to 300 seconds, based on user input)
+    while True:
+        try:            
+            answer_box = simpledialog.askstring(title = "User Input Required: 2-second analysis", prompt = "How many seconds of post-event data (180-300)?")
+            post_event_data_range = int(answer_box)
+        except ValueError:
+            tk.messagebox.showwarning("Error", "Not a number")
+            continue
+        if post_event_data_range < 180 or post_event_data_range > 300:
+            tk.messagebox.showwarning("Error", "Number is outside the valid range")
+            continue
+        else:
+            break
+
+    text_display_readonly("\n2-second analysis::\n")
+    event_range = df.loc[event_line_num - 30 : event_line_num + post_event_data_range].copy()
+    baseline_average = np.mean(event_range.loc[event_line_num - 5: event_line_num - 1]["BIO 1"])
+    event_range.loc[:, "BIO 1"] -= baseline_average
+    text_display_readonly("Baseline average = " + str(baseline_average) + "\n\n")
+    text_display_readonly(event_range.to_string(max_rows = 10) + "\n")
 
 window = tk.Tk()
 window.resizable(0, 0)
