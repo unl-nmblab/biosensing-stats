@@ -38,4 +38,7 @@ window.title("biosensing-stats")
 window.geometry("700x450")
 button_file_dialog = tk.Button(window, height = 1, width = 10, text = "Browse Files", command = open_file_dialog)
 button_file_dialog.place(x = 10, y = 10)
+button_get_event = tk.Button(window, height = 1, width = 10, text = "Get Event")
+button_get_event.place(x = 100, y = 10)
+button_get_event["state"] = "disabled"
 window.mainloop()
