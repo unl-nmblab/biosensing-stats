@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import pandas as pd
 import tkinter as tk
-from tkinter import filedialog, scrolledtext
+from tkinter import filedialog, messagebox, scrolledtext
 
 df = None
 events = []
@@ -46,20 +46,31 @@ def open_file_dialog():
 def get_event():
     global df
     global events
-    text_display_readonly(df.loc[events.pop(0)])
+    curr_event = events.pop(0)
+    text_display_clear()
+    text_display_readonly(df.loc[curr_event])
+    # ask the user to decide if we analyze this particular event
+    message_box = tk.messagebox.askquestion("User Input Required", "Perform analysis on this event?", icon = "question")
+    if message_box == "yes":
+        # run both types of analysis
     if not events:
         button_get_event["state"] = "disabled"
 
 def text_display_readonly(string):
-    text_display.configure(state="normal")
+    text_display.configure(state = "normal")
     text_display.insert(tk.END, string)
-    text_display.configure(state="disabled")
+    text_display.configure(state = "disabled")
+
+def text_display_clear():
+    text_display.configure(state = "normal")
+    text_display.delete(1.0, tk.END)
+    text_display.configure(state = "disabled")
 
 window = tk.Tk()
 window.resizable(0, 0)
 window.title("biosensing-stats")
 window.geometry("710x460")
-button_file_dialog = tk.Button(window, height = 1, width = 10, text = "Browse Files", command = open_file_dialog)
+button_file_dialog = tk.Button(window, height = 1, width = 10, text = "Select File", command = open_file_dialog)
 button_file_dialog.place(x = 10, y = 10)
 button_get_event = tk.Button(window, height = 1, width = 10, text = "Get Event", command = get_event)
 button_get_event.place(x = 100, y = 10)
