@@ -53,7 +53,7 @@ def get_event():
     global events
     curr_event = events.pop(0)
     text_display_clear()
-    text_display_readonly(event_str(df.loc[curr_event]))
+    text_display_readonly(event_str(df.loc[curr_event]) + "\n")
     # ask the user to decide if we analyze this particular event
     message_box = tk.messagebox.askquestion("User Input Required", "Does this comment represent an experimental event?", icon = "question")
     if message_box == "yes":
@@ -99,7 +99,21 @@ def two_second_analysis(df, event_line_num):
     baseline_average = np.mean(event_range.loc[event_line_num - 5: event_line_num - 1]["BIO 1"])
     event_range.loc[:, "BIO 1"] -= baseline_average
     text_display_readonly("Baseline average = " + str(baseline_average) + "\n\n")
-    text_display_readonly(event_range.to_string(max_rows = 10) + "\n")
+    text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
+    print(event_range)
+
+    # average each two 1-second data points, so data is average of 2 seconds
+    text_display_readonly("Prune (average) each two 1-second data points:\n\n")
+    del event_range["Date"]
+    del event_range["Time from Start"]
+    del event_range["Time Stamp"]
+    event_range.set_index(pd.to_timedelta(event_range["Time"]), inplace = True)
+    del event_range["Time"]
+    event_range = event_range.resample("2S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("500 milliseconds")).iloc[:-1]
+    text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
+
+    # output in a cut-and-pasteable format for graphing
+    # event_range.to_csv("timestamp_" + str(event_line_num) + ".csv", index = True)
 
 window = tk.Tk()
 window.resizable(0, 0)
