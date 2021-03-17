@@ -59,6 +59,7 @@ def get_event():
     if message_box == "yes":
         # run both types of analysis
         two_second_analysis(df, curr_event)
+        thirty_second_analysis(df, curr_event)
     if not events:
         button_get_event["state"] = "disabled"
 
@@ -113,7 +114,44 @@ def two_second_analysis(df, event_line_num):
     text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
 
     # output in a cut-and-pasteable format for graphing
-    # event_range.to_csv("timestamp_" + str(event_line_num) + ".csv", index = True)
+    event_range.to_csv("timestamp_" + str(event_line_num) + "_2s.csv", index = True)
+
+# performs a 30-second analysis on the provided dataframe at the event, given as a row number
+def thirty_second_analysis(df, event_line_num):
+    # select 300 seconds pre-event data and a range of post-event data (up to 3000 seconds, based on user input)
+    while True:
+        try:
+            answer_box = simpledialog.askstring(title = "User Input Required: 30-second analysis", prompt = "How many seconds of post-event data (up to 3000)?")
+            post_event_data_range = int(answer_box)
+        except ValueError:
+            tk.messagebox.showwarning("Error", "Not a number")
+            continue
+        if post_event_data_range < 0 or post_event_data_range > 3000:
+            tk.messagebox.showwarning("Error", "Number is outside the valid range")
+            continue
+        else:
+            break
+
+    text_display_readonly("\n30-second analysis::\n")
+    event_range = df.loc[event_line_num - 300 : event_line_num + post_event_data_range].copy()
+    baseline_average = np.mean(event_range.loc[event_line_num - 15: event_line_num - 1]["BIO 1"])
+    event_range.loc[:, "BIO 1"] -= baseline_average
+    text_display_readonly("Baseline average = " + str(baseline_average) + "\n\n")
+    text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
+    print(event_range)
+
+    # average each two 1-second data points, so data is average of 2 seconds
+    text_display_readonly("Prune (average) thirty 1-second data points:\n\n")
+    del event_range["Date"]
+    del event_range["Time from Start"]
+    del event_range["Time Stamp"]
+    event_range.set_index(pd.to_timedelta(event_range["Time"]), inplace = True)
+    del event_range["Time"]
+    event_range = event_range.resample("30S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("15 seconds")).iloc[:-1]
+    text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
+
+    # output in a cut-and-pasteable format for graphing
+    event_range.to_csv("timestamp_" + str(event_line_num) + "_30s.csv", index = True)
 
 window = tk.Tk()
 window.resizable(0, 0)
@@ -126,6 +164,7 @@ button_get_event.place(x = 100, y = 10)
 button_get_event["state"] = "disabled"
 text_display = scrolledtext.ScrolledText(window, height = 25, width = 85)
 text_display.place(x = 10, y = 45)
+text_display.configure(state = "disabled")
 label_file_name = tk.Label(window)
 label_file_name.place(x = 190, y = 13)
 window.mainloop()
