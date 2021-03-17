@@ -140,7 +140,7 @@ def thirty_second_analysis(df, event_line_num):
     text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
     print(event_range)
 
-    # average each two 1-second data points, so data is average of 2 seconds
+    # average each thirty 1-second data points, so data is average of 30 seconds
     text_display_readonly("Prune (average) thirty 1-second data points:\n\n")
     del event_range["Date"]
     del event_range["Time from Start"]
