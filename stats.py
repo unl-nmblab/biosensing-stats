@@ -104,14 +104,14 @@ def two_second_analysis(df, event_line_num):
     print(event_range)
 
     # average each two 1-second data points, so data is average of 2 seconds
-    text_display_readonly("Prune (average) each two 1-second data points:\n\n")
+    #text_display_readonly("Prune (average) each two 1-second data points:\n\n")
     del event_range["Date"]
     del event_range["Time from Start"]
     del event_range["Time Stamp"]
-    event_range.set_index(pd.to_timedelta(event_range["Time"]), inplace = True)
+    #event_range.set_index(pd.to_timedelta(event_range["Time"]), inplace = True)
     del event_range["Time"]
-    event_range = event_range.resample("2S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("500 milliseconds")).iloc[:-1]
-    text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
+    #event_range = event_range.resample("2S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("500 milliseconds")).iloc[:-1]
+    #text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
 
     # output in a cut-and-pasteable format for graphing
     event_range.to_csv("timestamp_" + str(event_line_num) + "_2s.csv", index = True)
@@ -141,14 +141,14 @@ def thirty_second_analysis(df, event_line_num):
     print(event_range)
 
     # average each thirty 1-second data points, so data is average of 30 seconds
-    text_display_readonly("Prune (average) thirty 1-second data points:\n\n")
+    #text_display_readonly("Prune (average) thirty 1-second data points:\n\n")
     del event_range["Date"]
     del event_range["Time from Start"]
     del event_range["Time Stamp"]
-    event_range.set_index(pd.to_timedelta(event_range["Time"]), inplace = True)
+    #event_range.set_index(pd.to_timedelta(event_range["Time"]), inplace = True)
     del event_range["Time"]
-    event_range = event_range.resample("30S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("15 seconds")).iloc[:-1]
-    text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
+    #event_range = event_range.resample("30S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("15 seconds")).iloc[:-1]
+    #text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
 
     # output in a cut-and-pasteable format for graphing
     event_range.to_csv("timestamp_" + str(event_line_num) + "_30s.csv", index = True)
