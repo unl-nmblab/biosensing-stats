@@ -15,10 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
-from math import nan
+from math import nan, isnan
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.linear_model import LinearRegression
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext, simpledialog
 
@@ -136,8 +137,13 @@ def two_second_analysis(df, event_line_num):
 
     # create a copy of the column
     event_range["BIO 1 Outliers Removed"] = event_range["BIO 1"]
+    # replace any outliers with NaN
     event_range["BIO 1 Outliers Removed"].where(event_range["BIO 1"] < q3 + multiplier * iqr, nan, inplace=True)
     event_range["BIO 1 Outliers Removed"].where(event_range["BIO 1"] > q1 - multiplier * iqr, nan, inplace=True)
+
+    # replacing tossed values using sklearn
+    event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Outliers Removed"]
+    event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Forecast Linear"].interpolate()
 
     # fig, ax = plt.subplots()
     # plt.scatter(event_range.index, event_range["BIO 1 Outliers Removed"], alpha=0.5)
@@ -189,8 +195,41 @@ def thirty_second_analysis(df, event_line_num):
     #event_range = event_range.resample("30S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("15 seconds")).iloc[:-1]
     #text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
 
+    # removing outliers now
+    q1 = event_range["BIO 1"].quantile(.25)
+    q3 = event_range["BIO 1"].quantile(.75)
+    iqr = q3 - q1
+
+    # prompt user to enter a multiplier for iqr
+    while True:
+        try:            
+            answer_box = simpledialog.askstring(title = "User Input Required: IQR multiplier", prompt = "What will the IQR multiplier be (1.5-3.0)?")
+            multiplier = float(answer_box)
+        except ValueError:
+            tk.messagebox.showwarning("Error", "Not a number")
+            continue
+        if multiplier > 3 or multiplier < 1.5:
+            tk.messagebox.showwarning("Error", "Number is outside the valid range")
+            continue
+        else:
+            break
+
+    # create a copy of the column
+    event_range["BIO 1 Outliers Removed"] = event_range["BIO 1"]
+    # replace any outliers with NaN
+    event_range["BIO 1 Outliers Removed"].where(event_range["BIO 1"] < q3 + multiplier * iqr, nan, inplace=True)
+    event_range["BIO 1 Outliers Removed"].where(event_range["BIO 1"] > q1 - multiplier * iqr, nan, inplace=True)
+
+    # replacing tossed values using sklearn
+    event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Outliers Removed"]
+    event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Forecast Linear"].interpolate()
+
     # output in a cut-and-pasteable format for graphing
     event_range.to_csv("timestamp_" + str(event_line_num) + "_30s.csv", index = True)
+    # with baseline average at the end
+    file_obj = open("timestamp_" + str(event_line_num) + "_30s.csv", "a")
+    file_obj.write("Baseline average = " + str(baseline_average))
+    file_obj.close()
 
 window = tk.Tk()
 window.resizable(0, 0)
