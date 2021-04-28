@@ -100,21 +100,6 @@ def two_second_analysis(df, event_line_num):
 
     text_display_readonly("\n2-second analysis::\n")
     event_range = df.loc[event_line_num - 30 : event_line_num + post_event_data_range].copy()
-    baseline_average = np.mean(event_range.loc[event_line_num - 5: event_line_num - 1]["BIO 1"])
-    event_range.loc[:, "BIO 1"] -= baseline_average
-    text_display_readonly("Baseline average = " + str(baseline_average) + "\n\n")
-    text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
-    print(event_range)
-
-    # average each two 1-second data points, so data is average of 2 seconds
-    #text_display_readonly("Prune (average) each two 1-second data points:\n\n")
-    del event_range["Date"]
-    del event_range["Time from Start"]
-    del event_range["Time Stamp"]
-    #event_range.set_index(pd.to_timedelta(event_range["Time"]), inplace = True)
-    del event_range["Time"]
-    #event_range = event_range.resample("2S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("500 milliseconds")).iloc[:-1]
-    #text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
 
     # removing outliers now
     q1 = event_range["BIO 1"].quantile(.25)
@@ -145,14 +130,31 @@ def two_second_analysis(df, event_line_num):
     event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Outliers Removed"]
     event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Forecast Linear"].interpolate()
 
-    # fig, ax = plt.subplots()
-    # plt.scatter(event_range.index, event_range["BIO 1 Outliers Removed"], alpha=0.5)
-    # ax.set_xlabel("timestamp from start (sec)", fontsize=11)
-    # ax.set_ylabel("BIO 1", fontsize=11)
-    # ax.set_title("BIO 1 change over time")
-    # ax.grid(True)
-    # fig.tight_layout()
-    # plt.savefig("timestamp_" + str(event_line_num) + "_2s_plot.png")
+    # subtract baseline average
+    event_range["BIO 1 Baseline Avg Subtracted"] = event_range["BIO 1 Forecast Linear"]
+    baseline_average = np.mean(event_range.loc[event_line_num - 5: event_line_num - 1]["BIO 1 Baseline Avg Subtracted"])
+    event_range.loc[:, "BIO 1 Baseline Avg Subtracted"] -= baseline_average
+    text_display_readonly("Baseline average = " + str(baseline_average) + "\n\n")
+    text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
+
+    # average each two 1-second data points, so data is average of 2 seconds
+    #text_display_readonly("Prune (average) each two 1-second data points:\n\n")
+    del event_range["Date"]
+    del event_range["Time from Start"]
+    del event_range["Time Stamp"]
+    #event_range.set_index(pd.to_timedelta(event_range["Time"]), inplace = True)
+    del event_range["Time"]
+    #event_range = event_range.resample("2S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("500 milliseconds")).iloc[:-1]
+    #text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
+
+    '''fig, ax = plt.subplots()
+    plt.scatter(event_range.index, event_range["BIO 1 Baseline Avg Subtracted"], alpha=0.5, s=10)
+    ax.set_xlabel("timestamp from start (sec)", fontsize=11)
+    ax.set_ylabel("BIO 1", fontsize=11)
+    ax.set_title("BIO 1 change over time")
+    ax.grid(True)
+    fig.tight_layout()
+    plt.savefig("timestamp_" + str(event_line_num) + "_2s_plot.png", dpi=900)'''
 
     # output in a cut-and-pasteable format for graphing
     event_range.to_csv("timestamp_" + str(event_line_num) + "_2s.csv", index = True)
@@ -179,21 +181,6 @@ def thirty_second_analysis(df, event_line_num):
 
     text_display_readonly("\n30-second analysis::\n")
     event_range = df.loc[event_line_num - 300 : event_line_num + post_event_data_range].copy()
-    baseline_average = np.mean(event_range.loc[event_line_num - 15: event_line_num - 1]["BIO 1"])
-    event_range.loc[:, "BIO 1"] -= baseline_average
-    text_display_readonly("Baseline average = " + str(baseline_average) + "\n\n")
-    text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
-    print(event_range)
-
-    # average each thirty 1-second data points, so data is average of 30 seconds
-    #text_display_readonly("Prune (average) thirty 1-second data points:\n\n")
-    del event_range["Date"]
-    del event_range["Time from Start"]
-    del event_range["Time Stamp"]
-    #event_range.set_index(pd.to_timedelta(event_range["Time"]), inplace = True)
-    del event_range["Time"]
-    #event_range = event_range.resample("30S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("15 seconds")).iloc[:-1]
-    #text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
 
     # removing outliers now
     q1 = event_range["BIO 1"].quantile(.25)
@@ -223,6 +210,32 @@ def thirty_second_analysis(df, event_line_num):
     # replacing tossed values using sklearn
     event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Outliers Removed"]
     event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Forecast Linear"].interpolate()
+
+    # subtract baseline average
+    event_range["BIO 1 Baseline Avg Subtracted"] = event_range["BIO 1 Forecast Linear"]
+    baseline_average = np.mean(event_range.loc[event_line_num - 15: event_line_num - 1]["BIO 1 Baseline Avg Subtracted"])
+    event_range.loc[:, "BIO 1 Baseline Avg Subtracted"] -= baseline_average
+    text_display_readonly("Baseline average = " + str(baseline_average) + "\n\n")
+    text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
+
+    # average each thirty 1-second data points, so data is average of 30 seconds
+    #text_display_readonly("Prune (average) thirty 1-second data points:\n\n")
+    del event_range["Date"]
+    del event_range["Time from Start"]
+    del event_range["Time Stamp"]
+    #event_range.set_index(pd.to_timedelta(event_range["Time"]), inplace = True)
+    del event_range["Time"]
+    #event_range = event_range.resample("30S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("15 seconds")).iloc[:-1]
+    #text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
+
+    '''fig, ax = plt.subplots()
+    plt.scatter(event_range.index, event_range["BIO 1 Baseline Avg Subtracted"], alpha=0.5, s=10)
+    ax.set_xlabel("timestamp from start (sec)", fontsize=11)
+    ax.set_ylabel("BIO 1", fontsize=11)
+    ax.set_title("BIO 1 change over time")
+    ax.grid(True)
+    fig.tight_layout()
+    plt.savefig("timestamp_" + str(event_line_num) + "_30s_plot.png", dpi=900)'''
 
     # output in a cut-and-pasteable format for graphing
     event_range.to_csv("timestamp_" + str(event_line_num) + "_30s.csv", index = True)
