@@ -19,7 +19,6 @@ from math import nan, isnan
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext, simpledialog
 
@@ -126,7 +125,7 @@ def two_second_analysis(df, event_line_num):
     event_range["BIO 1 Outliers Removed"].where(event_range["BIO 1"] < q3 + multiplier * iqr, nan, inplace=True)
     event_range["BIO 1 Outliers Removed"].where(event_range["BIO 1"] > q1 - multiplier * iqr, nan, inplace=True)
 
-    # replacing tossed values using sklearn
+    # replacing tossed values
     event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Outliers Removed"]
     event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Forecast Linear"].interpolate()
 
@@ -207,7 +206,7 @@ def thirty_second_analysis(df, event_line_num):
     event_range["BIO 1 Outliers Removed"].where(event_range["BIO 1"] < q3 + multiplier * iqr, nan, inplace=True)
     event_range["BIO 1 Outliers Removed"].where(event_range["BIO 1"] > q1 - multiplier * iqr, nan, inplace=True)
 
-    # replacing tossed values using sklearn
+    # replacing tossed values
     event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Outliers Removed"]
     event_range["BIO 1 Forecast Linear"] = event_range["BIO 1 Forecast Linear"].interpolate()
 
