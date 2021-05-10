@@ -146,6 +146,35 @@ def two_second_analysis(df, event_line_num):
     #event_range = event_range.resample("2S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("500 milliseconds")).iloc[:-1]
     #text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
 
+    # scatterplot generation:
+
+    # raw current
+    fig, ax = plt.subplots()
+    plt.scatter(event_range.index, event_range["BIO 1"], alpha=0.5, s=10)
+    ymin = floor(event_range["BIO 1"].min())
+    ymax = ceil(event_range["BIO 1"].max())
+    ax.set_ylim([ymin,ymax])
+    ax.set_xlabel("Time from start (sec)", fontsize=11)
+    ax.set_ylabel("nA", fontsize=11)
+    ax.set_title("Raw Current")
+    ax.grid(True)
+    fig.tight_layout()
+    plt.savefig("timestamp_" + str(event_line_num) + "_2s_plot_raw_current.png", dpi=900)
+
+    # linear interpolated
+    fig, ax = plt.subplots()
+    plt.scatter(event_range.index, event_range["BIO 1 Forecast Linear"], alpha=0.5, s=10)
+    ymin = floor(event_range["BIO 1 Forecast Linear"].min())
+    ymax = ceil(event_range["BIO 1 Forecast Linear"].max())
+    ax.set_ylim([ymin,ymax])
+    ax.set_xlabel("Time from start (sec)", fontsize=11)
+    ax.set_ylabel("nA", fontsize=11)
+    ax.set_title("Linear Interpolated")
+    ax.grid(True)
+    fig.tight_layout()
+    plt.savefig("timestamp_" + str(event_line_num) + "_2s_plot_linear_interpolated.png", dpi=900)
+
+    # baseline subtracted
     fig, ax = plt.subplots()
     plt.scatter(event_range.index, event_range["BIO 1 Baseline Avg Subtracted"], alpha=0.5, s=10)
     ymin = floor(event_range["BIO 1 Baseline Avg Subtracted"].min())
@@ -156,7 +185,7 @@ def two_second_analysis(df, event_line_num):
     ax.set_title("Baseline Subtracted")
     ax.grid(True)
     fig.tight_layout()
-    plt.savefig("timestamp_" + str(event_line_num) + "_2s_plot.png", dpi=900)
+    plt.savefig("timestamp_" + str(event_line_num) + "_2s_plot_baseline_subtracted.png", dpi=900)
 
     # output in a cut-and-pasteable format for graphing
     event_range.to_csv("timestamp_" + str(event_line_num) + "_2s.csv", index = True)
@@ -230,6 +259,35 @@ def thirty_second_analysis(df, event_line_num):
     #event_range = event_range.resample("30S").mean().reset_index().assign(Time = lambda x: x.Time + pd.Timedelta("15 seconds")).iloc[:-1]
     #text_display_readonly(event_range.to_string(max_rows = 10) + "\n\n")
 
+    # scatterplot generation:
+
+    # raw current
+    fig, ax = plt.subplots()
+    plt.scatter(event_range.index, event_range["BIO 1"], alpha=0.5, s=10)
+    ymin = floor(event_range["BIO 1"].min())
+    ymax = ceil(event_range["BIO 1"].max())
+    ax.set_ylim([ymin,ymax])
+    ax.set_xlabel("Time from start (sec)", fontsize=11)
+    ax.set_ylabel("nA", fontsize=11)
+    ax.set_title("Raw Current")
+    ax.grid(True)
+    fig.tight_layout()
+    plt.savefig("timestamp_" + str(event_line_num) + "_30s_plot_raw_current.png", dpi=900)
+
+    # linear interpolated
+    fig, ax = plt.subplots()
+    plt.scatter(event_range.index, event_range["BIO 1 Forecast Linear"], alpha=0.5, s=10)
+    ymin = floor(event_range["BIO 1 Forecast Linear"].min())
+    ymax = ceil(event_range["BIO 1 Forecast Linear"].max())
+    ax.set_ylim([ymin,ymax])
+    ax.set_xlabel("Time from start (sec)", fontsize=11)
+    ax.set_ylabel("nA", fontsize=11)
+    ax.set_title("Linear Interpolated")
+    ax.grid(True)
+    fig.tight_layout()
+    plt.savefig("timestamp_" + str(event_line_num) + "_30s_plot_linear_interpolated.png", dpi=900)
+
+    # baseline subtracted
     fig, ax = plt.subplots()
     plt.scatter(event_range.index, event_range["BIO 1 Baseline Avg Subtracted"], alpha=0.5, s=10)
     ymin = floor(event_range["BIO 1 Baseline Avg Subtracted"].min())
@@ -240,7 +298,7 @@ def thirty_second_analysis(df, event_line_num):
     ax.set_title("Baseline Subtracted")
     ax.grid(True)
     fig.tight_layout()
-    plt.savefig("timestamp_" + str(event_line_num) + "_30s_plot.png", dpi=900)
+    plt.savefig("timestamp_" + str(event_line_num) + "_30s_plot_baseline_subtracted.png", dpi=900)
 
     # output in a cut-and-pasteable format for graphing
     event_range.to_csv("timestamp_" + str(event_line_num) + "_30s.csv", index = True)
