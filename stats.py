@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
-from math import nan, isnan
+from math import nan, isnan, floor, ceil
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -24,8 +24,6 @@ from tkinter import filedialog, messagebox, scrolledtext, simpledialog
 
 df = None
 events = []
-ymin = nan
-ymax = nan
 
 # prompts the user to select a text file and inputs data as a pandas dataframe,
 #  then finds potential experimental events and places their line numbers into
@@ -33,13 +31,9 @@ ymax = nan
 def open_file_dialog():
     global df
     global events
-    global ymin
-    global ymax
     filepath = tk.filedialog.askopenfilename(initialdir = "./", title = "Select a File", filetypes = (("Text files", "*.txt*"), ("All files", "*.*")))
     try:
         df = pd.read_table(filepath, names = ["Date","Time","Time Stamp","Time from Start","BIO 1","Comment"], skiprows = 7)
-        ymin = df["BIO 1"].min()
-        ymax = df["BIO 1"].max()
         # strip whitespace from columns
         df["Date"] = df["Date"].str.strip()
         df["Time"] = df["Time"].str.strip()
@@ -154,10 +148,12 @@ def two_second_analysis(df, event_line_num):
 
     fig, ax = plt.subplots()
     plt.scatter(event_range.index, event_range["BIO 1 Baseline Avg Subtracted"], alpha=0.5, s=10)
+    ymin = floor(event_range["BIO 1 Baseline Avg Subtracted"].min())
+    ymax = ceil(event_range["BIO 1 Baseline Avg Subtracted"].max())
     ax.set_ylim([ymin,ymax])
-    ax.set_xlabel("timestamp from start (sec)", fontsize=11)
-    ax.set_ylabel("BIO 1", fontsize=11)
-    ax.set_title("BIO 1 change over time")
+    ax.set_xlabel("Time from start (sec)", fontsize=11)
+    ax.set_ylabel("nA", fontsize=11)
+    ax.set_title("Baseline Subtracted")
     ax.grid(True)
     fig.tight_layout()
     plt.savefig("timestamp_" + str(event_line_num) + "_2s_plot.png", dpi=900)
@@ -236,10 +232,12 @@ def thirty_second_analysis(df, event_line_num):
 
     fig, ax = plt.subplots()
     plt.scatter(event_range.index, event_range["BIO 1 Baseline Avg Subtracted"], alpha=0.5, s=10)
+    ymin = floor(event_range["BIO 1 Baseline Avg Subtracted"].min())
+    ymax = ceil(event_range["BIO 1 Baseline Avg Subtracted"].max())
     ax.set_ylim([ymin,ymax])
-    ax.set_xlabel("timestamp from start (sec)", fontsize=11)
-    ax.set_ylabel("BIO 1", fontsize=11)
-    ax.set_title("BIO 1 change over time")
+    ax.set_xlabel("Time from start (sec)", fontsize=11)
+    ax.set_ylabel("nA", fontsize=11)
+    ax.set_title("Baseline Subtracted")
     ax.grid(True)
     fig.tight_layout()
     plt.savefig("timestamp_" + str(event_line_num) + "_30s_plot.png", dpi=900)
