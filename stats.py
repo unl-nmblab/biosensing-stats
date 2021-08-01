@@ -38,6 +38,9 @@ def open_file_dialog():
         df["Date"] = df["Date"].str.strip()
         df["Time"] = df["Time"].str.strip()
         df["Comment"] = df["Comment"].str.strip()
+        if df["BIO 1"].dtypes != "float64":
+            df["BIO 1"] = df["BIO 1"].str.strip()
+            df["BIO 1"] = pd.to_numeric(df["BIO 1"])
         for i in range(0, df.shape[0]):
             # if we have a comment in any given row, we know an experimental event may have happened here
             if df.loc[i, "Comment"]:
